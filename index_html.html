@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SCIENCE TUTORIAL — Coaching Management</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#000;
+      --card:#0f1418;
+      --muted:#9aa6b2;
+      --text:#e6f0f6;
+      --accent:#ffb84d;
+      --accent2:#ff6a00;
+      --danger:#e03b3b;
+      --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      padding:18px;
+      -webkit-font-smoothing:antialiased;
+    }
+    .wrap{max-width:1100px;margin:0 auto}
+    /* Header: brand centered bigger; address moved below */
+    header{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:8px}
+    .brand{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#07101a;padding:18px 22px;border-radius:12px;font-weight:900;font-size:36px;letter-spacing:1px;text-align:center}
+    .address{color:var(--muted);font-size:14px;text-align:center;margin-top:4px}
+
+    /* Top nav in one line with animated lift and underline indicator */
+    .nav-wrap{position:relative; margin:14px 0 18px}
+    nav{display:flex;gap:10px;flex-wrap:nowrap;overflow:auto;padding:6px 6px}
+    .nav-btn{
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      color:#07101a;
+      padding:10px 14px;border-radius:10px;cursor:pointer;white-space:nowrap;
+      transform:translateY(0); transition:transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.6); border:0; font-weight:800;
+    }
+    .nav-btn.inactive{
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      opacity:0.75;
+    }
+    .nav-btn:hover{ transform:translateY(-4px) scale(1.02); box-shadow:0 10px 30px rgba(0,0,0,0.75); opacity:1; }
+    .nav-indicator{ position:absolute; height:6px; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:6px; bottom:-6px; left:0; width:0; transition:all 240ms cubic-bezier(.2,.9,.3,1); pointer-events:none }
+
+    .card{background:var(--card);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+    .grid{display:grid;gap:12px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,select,textarea,button{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);width:100%}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .two{grid-template-columns:1fr 1fr}
+    .students-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .student{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01))}
+    .avatar{width:48px;height:48px;border-radius:8px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);font-size:18px}
+    .muted{color:var(--muted)}
+    .actions{display:flex;gap:8px;align-items:center}
+    .btn{padding:8px 12px;border-radius:8px;cursor:pointer;border:0;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#07101a;font-weight:700}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text);font-weight:600}
+    .small{font-size:13px;color:var(--muted)}
+    footer{margin-top:12px;color:var(--muted);font-size:13px}
+    .hidden{display:none}
+    .flex{display:flex;gap:8px;align-items:center}
+    .file-preview{width:100px;height:120px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left}
+    @media(max-width:880px){ .two{grid-template-columns:1fr} .row{flex-direction:column} nav{overflow-x:auto} .brand{font-size:28px;padding:12px 16px} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">SCIENCE TUTORIAL</div>
+      <div class="address">Mahesh Nagar Road no 2, Boring Road, Patna • Mob: 7562821016 • Email: kumarprince85138@gmail.com</div>
+    </header>
+
+    <div class="nav-wrap">
+      <nav id="topNav">
+        <!-- all nav buttons use the same orange background as requested -->
+        <button class="nav-btn" id="nav-home">Home</button>
+        <button class="nav-btn" id="nav-register">Student Registration</button>
+        <button class="nav-btn" id="nav-stlogin">Student Login</button>
+        <button class="nav-btn" id="nav-admin">Admin Login</button>
+      </nav>
+      <div id="navIndicator" class="nav-indicator"></div>
+    </div>
+
+    <!-- HOME -->
+    <section id="home" class="card">
+      <h2 style="margin-top:0">Welcome to SCIENCE TUTORIAL</h2>
+      <p class="small">Local demo for student registration, payments, receipts and attendance. Use the top buttons to navigate.</p>
+
+      <div style="margin-top:12px" class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700">Coaching Details</div>
+            <div class="small muted" style="margin-top:6px;line-height:1.6">
+              Mahesh Nagar Road no 2, Boring Road, Patna<br/>
+              Mob: 7562821016 • Email: kumarprince85138@gmail.com
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div class="small">Total students</div>
+            <div style="font-weight:800;font-size:20px" id="totalCount">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px" class="card">
+        <h3 style="margin:0 0 8px">Students List</h3>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="search" placeholder="Search by name / phone / course / id" class="small" />
+          <button id="searchBtn" class="btn btn-small btn-ghost" style="padding:8px 10px">Search</button>
+          <div style="flex:1"></div>
+          <button id="loadSample" class="btn btn-ghost" style="background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)">Load sample</button>
+          <button id="exportCSV" class="btn">Export CSV</button>
+        </div>
+
+        <div id="students" class="students-list" aria-live="polite"></div>
+        <footer>Tip: Edit, delete or open student record to add payments/receipts from Admin login.</footer>
+      </div>
+    </section>
+
+    <!-- REGISTER, STUDENT LOGIN, ADMIN LOGIN, ADMIN DASH (unchanged structure) -->
+    <section id="register" class="card hidden" style="margin-top:12px">
+      <h2 style="margin-top:0">Student Registration</h2>
+      <form id="regForm" class="grid two" style="margin-top:8px">
+        <div style="grid-column:1/-1; display:flex; gap:18px; align-items:flex-start">
+          <div style="flex:0 0 140px; text-align:center">
+            <label class="small">Upload Photo</label>
+            <input id="r_photo" type="file" accept="image/*" />
+            <img id="photoPreview" class="file-preview" src="" alt="" />
+          </div>
+          <div style="flex:1" class="grid two">
+            <div>
+              <label>First name *</label>
+              <input id="r_first" required />
+            </div>
+            <div>
+              <label>Last name</label>
+              <input id="r_last" />
+            </div>
+            <div>
+              <label>Mobile / फ़ोन *</label>
+              <input id="r_phone" required />
+            </div>
+            <div>
+              <label>Class / क्लास *</label>
+              <input id="r_class" placeholder="e.g., 11, 12, NEET" required />
+            </div>
+            <div>
+              <label>Aadhaar Number / आधार</label>
+              <input id="r_aadhaar" maxlength="12" />
+            </div>
+            <div>
+              <label>Admission Fees Paid (₹)</label>
+              <input id="r_paid" type="number" value="0" />
+            </div>
+            <div>
+              <label>Father's Name / पिता का नाम</label>
+              <input id="r_father" />
+            </div>
+            <div>
+              <label>Mother's Name / माता का नाम</label>
+              <input id="r_mother" />
+            </div>
+            <div style="grid-column:1/-1">
+              <label>Address / पता</label>
+              <textarea id="r_address" rows="3"></textarea>
+            </div>
+            <div style="grid-column:1/-1">
+              <label>Notes / नोट्स</label>
+              <input id="r_notes" />
+            </div>
+          </div>
+        </div>
+
+        <div style="grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px">
+          <button type="button" id="doRegister" class="btn">Register</button>
+          <button type="button" id="cancelRegister" class="nav-btn">Cancel</button>
+        </div>
+      </form>
+      <p class="small" id="regResult"></p>
+    </section>
+
+    <section id="studentLogin" class="card hidden" style="margin-top:12px">
+      <h2 style="margin-top:0">Student Login</h2>
+      <div class="grid two" style="margin-top:8px">
+        <div>
+          <label>Student ID</label>
+          <input id="s_id" placeholder="Enter student ID" />
+        </div>
+        <div>
+          <label>Phone</label>
+          <input id="s_phone" placeholder="Phone used at registration" />
+        </div>
+
+        <div style="grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px">
+          <button id="doStudentLogin" class="btn">Login</button>
+          <button id="studentCancel" class="nav-btn">Cancel</button>
+        </div>
+      </div>
+
+      <div id="studentArea" class="card hidden" style="margin-top:12px">
+        <h3>Student Dashboard</h3>
+        <div id="studentProfile" class="small"></div>
+
+        <div style="margin-top:10px">
+          <h4>Payments</h4>
+          <div id="studentPayments" class="small"></div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input id="stu_pay_amount" type="number" placeholder="Amount (₹)" />
+            <input id="stu_pay_date" type="date" />
+            <button id="stu_add_payment" class="btn">Add Payment & Receipt</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="adminLogin" class="card hidden" style="margin-top:12px">
+      <h2 style="margin-top:0">Admin Login</h2>
+      <div class="grid two" style="margin-top:8px">
+        <div>
+          <label>Admin Email</label>
+          <input id="admin_email" value="admin@gurukul" />
+        </div>
+        <div>
+          <label>Password</label>
+          <input id="admin_pass" type="password" value="admin123" />
+        </div>
+        <div style="grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px">
+          <button id="doAdminLogin" class="btn">Login</button>
+          <button id="adminCancel" class="nav-btn">Cancel</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="adminDashboard" class="card hidden" style="margin-top:12px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <h2 style="flex:1;margin:0">Admin Dashboard</h2>
+        <div class="small">Logged in as <strong>admin@gurukul</strong></div>
+        <button id="adminLogout" class="nav-btn">Logout</button>
+      </div>
+
+      <div style="margin-top:12px" class="card">
+        <h3>Students (Admin)</h3>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="adminSearch" placeholder="Search students..." />
+          <button id="adminSearchBtn" class="btn btn-ghost">Search</button>
+          <div style="flex:1"></div>
+          <button id="adminExportCSV" class="btn">Export CSV</button>
+        </div>
+
+        <div style="margin-top:10px; overflow:auto">
+          <table id="adminTable"><thead><tr><th>ID</th><th>Name</th><th>Class</th><th>Phone</th><th>Fees Paid</th><th>Actions</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+
+      <div style="margin-top:12px" class="card">
+        <h3>Payments / Generate Receipt</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <select id="payment_student_select"></select>
+          <input id="pay_amount" type="number" placeholder="Amount (₹)" style="width:120px" />
+          <input id="pay_date" type="date" style="width:160px" />
+          <input id="pay_note" placeholder="Note" style="width:220px" />
+          <button id="addPaymentAdmin" class="btn">Add Payment & Download Receipt</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px" class="card">
+        <h3>Attendance (class-wise)</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input id="att_class" placeholder="Class name (e.g., 11, 12, NEET)" />
+          <input id="att_date" type="date" />
+          <button id="createAttendance" class="btn">Create / Mark Attendance</button>
+          <button id="viewAttendance" class="btn btn-ghost">View Records</button>
+        </div>
+
+        <div id="attendanceArea" style="margin-top:10px" class="small"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      /* ===== Data model (localStorage) ===== */
+      const STORAGE_STUDENTS = 'science_tutorial_students_v2';
+      const STORAGE_ATTEND = 'science_tutorial_attendance_v1';
+      const $ = id => document.getElementById(id);
+      function loadStudents(){ try { return JSON.parse(localStorage.getItem(STORAGE_STUDENTS) || '[]'); } catch(e){return []} }
+      function saveStudents(list){ localStorage.setItem(STORAGE_STUDENTS, JSON.stringify(list)); renderList(); renderAdminTable(); updateCount(); populatePaymentSelect(); }
+      function loadAttendance(){ try { return JSON.parse(localStorage.getItem(STORAGE_ATTEND) || '[]'); } catch(e){return []} }
+      function saveAttendance(list){ localStorage.setItem(STORAGE_ATTEND, JSON.stringify(list)); renderAttendanceList(); }
+      function genId(){ return 'STU-' + Date.now().toString(36).toUpperCase().slice(0,8); }
+      function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+      function nowISO(){ return new Date().toISOString().slice(0,10); }
+
+      // NAV indicator logic - keeps buttons working reliably
+      function setActiveNav(btnEl){
+        if(!btnEl) return;
+        Array.from(document.querySelectorAll('.nav-btn')).forEach(b=> b.classList.remove('active'));
+        btnEl.classList.add('active');
+        // indicator position relative to nav container
+        const nav = document.getElementById('topNav');
+        const ind = document.getElementById('navIndicator');
+        const btnRect = btnEl.getBoundingClientRect();
+        const navRect = nav.getBoundingClientRect();
+        const left = btnRect.left - navRect.left + nav.scrollLeft;
+        ind.style.width = btnRect.width + 'px';
+        ind.style.transform = `translateX(${left}px)`;
+      }
+
+      // show/hide sections
+      function show(sectionId){
+        ['home','register','studentLogin','adminLogin','adminDashboard'].forEach(id=>{
+          const el = document.getElementById(id); if(el) el.classList.add('hidden');
+        });
+        const s = document.getElementById(sectionId); if(s) s.classList.remove('hidden');
+        window.scrollTo({top:0,behavior:'smooth'});
+      }
+
+      // Wire nav buttons (ensures they work)
+      const btnHome = $('nav-home');
+      const btnRegister = $('nav-register');
+      const btnStLogin = $('nav-stlogin');
+      const btnAdmin = $('nav-admin');
+
+      btnHome.addEventListener('click', () => { show('home'); setActiveNav(btnHome); });
+      btnRegister.addEventListener('click', () => { show('register'); setActiveNav(btnRegister); });
+      btnStLogin.addEventListener('click', () => { show('studentLogin'); setActiveNav(btnStLogin); });
+      btnAdmin.addEventListener('click', () => { show('adminLogin'); setActiveNav(btnAdmin); });
+
+      /* Photo preview */
+      $('r_photo').addEventListener('change', (ev)=>{
+        const f = ev.target.files && ev.target.files[0];
+        if(!f) { $('photoPreview').src=''; return; }
+        const reader = new FileReader();
+        reader.onload = function(e){ $('photoPreview').src = e.target.result; };
+        reader.readAsDataURL(f);
+      });
+
+      /* Registration logic */
+      function addRegisterListeners(){
+        $('doRegister').onclick = function(){
+          if($('doRegister').textContent === 'Update') return; // update handled elsewhere
+          const first = $('r_first').value.trim(); const phone = $('r_phone').value.trim(); const className = $('r_class').value.trim();
+          if(!first || !phone || !className) { alert('First name, phone and class are required'); return; }
+          const student = {
+            id: genId(),
+            firstName: first,
+            lastName: $('r_last').value.trim(),
+            phone,
+            email: $('r_email').value.trim(),
+            class: className,
+            aadhaar: $('r_aadhaar').value.trim(),
+            address: $('r_address').value.trim(),
+            father: $('r_father').value.trim(),
+            mother: $('r_mother').value.trim(),
+            photo: $('photoPreview').src && $('photoPreview').src.startsWith('data:') ? $('photoPreview').src : '',
+            payments: [],
+            created: nowISO(),
+            notes: $('r_notes').value.trim()
+          };
+          const paid = Number($('r_paid').value || 0);
+          if(paid > 0) student.payments.push({ amount: paid, date: nowISO(), note: 'Admission fee' });
+          const list = loadStudents(); list.push(student); saveStudents(list);
+          $('regResult').textContent = `Registered: ${student.firstName} ${student.lastName || ''} — ID: ${student.id}`;
+          $('regForm').reset(); $('photoPreview').src = '';
+          show('home');
+        };
+      }
+      addRegisterListeners();
+
+      // Cancel register: reset and restore
+      $('cancelRegister').addEventListener('click', ()=>{
+        $('regForm').reset(); $('photoPreview').src=''; $('doRegister').textContent = 'Register'; addRegisterListeners(); show('home');
+      });
+
+      /* Render student list (home) */
+      function renderList(filter=''){
+        const container = $('students');
+        const list = loadStudents();
+        container.innerHTML = '';
+        const filtered = list.filter(s=>{
+          if(!filter) return true;
+          const f = filter.toLowerCase();
+          return (s.firstName && s.firstName.toLowerCase().includes(f)) ||
+                 (s.lastName && s.lastName.toLowerCase().includes(f)) ||
+                 (s.phone && s.phone.includes(f)) ||
+                 (s.class && s.class.toLowerCase().includes(f)) ||
+                 (s.id && s.id.toLowerCase().includes(f));
+        });
+        if(!filtered.length){
+          container.innerHTML = '<div class="small muted">No students found.</div>';
+          updateCount();
+          return;
+        }
+        filtered.slice().reverse().forEach(s=>{
+          const div = document.createElement('div'); div.className='student';
+          div.innerHTML = `
+            <div style="display:flex;gap:12px;align-items:center">
+              <div class="avatar">${(s.firstName||'?')[0].toUpperCase()}</div>
+              <div>
+                <div style="font-weight:700">${escapeHtml(s.firstName)} ${escapeHtml(s.lastName||'')}</div>
+                <div class="muted">${escapeHtml(s.class||'No class')} • ${escapeHtml(s.email||'')} • ${escapeHtml(s.phone||'')}</div>
+                <div class="small muted">ID: ${s.id} • Registered: ${s.created||'-'}</div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="nav-btn" data-id="${s.id}" onclick="openStudentAdmin(this.dataset.id)">Open</button>
+              <button class="nav-btn" data-id="${s.id}" onclick="startEdit(this.dataset.id)" style="border:1px solid rgba(255,255,255,0.04)">Edit</button>
+              <button class="nav-btn" data-id="${s.id}" onclick="deleteStudent(this.dataset.id)" style="color:var(--danger);border:1px solid rgba(255,0,0,0.06)">Delete</button>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+        updateCount();
+      }
+
+      function updateCount(){ $('totalCount').textContent = loadStudents().length; }
+
+      $('searchBtn').addEventListener('click', ()=> renderList($('search').value.trim()));
+      $('search').addEventListener('keyup', (e)=>{ if(e.key==='Enter') renderList($('search').value.trim()); });
+
+      $('loadSample').addEventListener('click', ()=>{
+        if(!confirm('Replace current students with sample data?')) return;
+        const sample = [
+          {id:'STU-DEMO-001',firstName:'Asha',lastName:'Verma',phone:'9876543210',email:'asha@example.com',class:'Mathematics',created:nowISO(),payments:[{amount:1000,date:nowISO(),note:'Admission'}]},
+          {id:'STU-DEMO-002',firstName:'Rahul',lastName:'Kumar',phone:'9123456780',email:'rahul@example.com',class:'Physics',created:nowISO(),payments:[]}
+        ];
+        saveStudents(sample);
+        alert('Sample students loaded');
+      });
+
+      $('exportCSV').addEventListener('click', ()=>{
+        const list = loadStudents();
+        if(!list.length) return alert('No students to export');
+        const rows = [['id','firstName','lastName','phone','email','class','created','totalPaid']];
+        list.forEach(s => rows.push([s.id,s.firstName||'',s.lastName||'',s.phone||'',s.email||'',s.class||'',s.created||'', (s.payments||[]).reduce((a,b)=>a+Number(b.amount||0),0)]));
+        const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\n');
+        const blob = new Blob([csv], {type:'text/csv'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'science_tutorial_students.csv'; document.body.appendChild(a); a.click(); a.remove();
+      });
+
+      // Edit flow (reuse registration form)
+      window.startEdit = function(id){
+        const list = loadStudents();
+        const s = list.find(x => x.id === id);
+        if(!s) return alert('Not found');
+        $('r_first').value = s.firstName || ''; $('r_last').value = s.lastName || ''; $('r_phone').value = s.phone || ''; $('r_class').value = s.class || '';
+        $('r_email').value = s.email || ''; $('r_paid').value = (s.payments||[]).reduce((a,b)=>a+Number(b.amount||0),0);
+        $('r_aadhaar').value = s.aadhaar || ''; $('r_father').value = s.father || ''; $('r_mother').value = s.mother || '';
+        $('r_address').value = s.address || ''; $('r_notes').value = s.notes || '';
+        if(s.photo) $('photoPreview').src = s.photo;
+        $('doRegister').textContent = 'Update';
+        show('register');
+        $('doRegister').onclick = function updateHandler(){
+          s.firstName = $('r_first').value.trim(); s.lastName = $('r_last').value.trim(); s.phone = $('r_phone').value.trim();
+          s.class = $('r_class').value.trim(); s.email = $('r_email').value.trim(); s.aadhaar = $('r_aadhaar').value.trim();
+          s.father = $('r_father').value.trim(); s.mother = $('r_mother').value.trim(); s.address = $('r_address').value.trim();
+          s.notes = $('r_notes').value.trim();
+          if($('photoPreview').src && $('photoPreview').src.startsWith('data:')) s.photo = $('photoPreview').src;
+          saveStudents(list);
+          $('regForm').reset(); $('photoPreview').src=''; $('doRegister').textContent='Register';
+          addRegisterListeners();
+          show('home');
+        };
+      };
+
+      window.deleteStudent = function(id){
+        if(!confirm('Delete this student?')) return;
+        const list = loadStudents().filter(x => x.id !== id);
+        saveStudents(list);
+      };
+
+      // Admin login / admin dashboard functions
+      $('doAdminLogin').addEventListener('click', ()=>{
+        const email = $('admin_email').value.trim(); const pass = $('admin_pass').value;
+        if(email === 'admin@gurukul' && pass === 'admin123'){
+          show('adminDashboard'); setActiveNav(btnAdmin); renderAdminTable(); populatePaymentSelect(); renderAttendanceList();
+        } else alert('Invalid admin credentials (demo)');
+      });
+      $('adminCancel').addEventListener('click', ()=> show('home'));
+      $('adminLogout').addEventListener('click', ()=> { show('home'); });
+
+      function renderAdminTable(filter=''){
+        const tbody = $('adminTable').querySelector('tbody'); const list = loadStudents(); tbody.innerHTML = '';
+        const filtered = list.filter(s=>{
+          if(!filter) return true; const f = filter.toLowerCase();
+          return (s.firstName && s.firstName.toLowerCase().includes(f)) || (s.id && s.id.toLowerCase().includes(f)) || (s.phone && s.phone.includes(f));
+        });
+        filtered.forEach(s=>{
+          const tr = document.createElement('tr'); const totalPaid = (s.payments||[]).reduce((a,b)=>a+Number(b.amount||0),0);
+          tr.innerHTML = `<td>${s.id}</td><td>${escapeHtml(s.firstName)} ${escapeHtml(s.lastName||'')}</td><td>${escapeHtml(s.class||'-')}</td><td>${escapeHtml(s.phone||'-')}</td><td>₹${totalPaid}</td>
+            <td>
+              <button class="btn btn-ghost" onclick="adminView('${s.id}')">View</button>
+              <button class="btn" onclick="adminOpenEdit('${s.id}')">Edit</button>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+      }
+      $('adminSearchBtn').addEventListener('click', ()=> renderAdminTable($('adminSearch').value.trim()));
+      function populatePaymentSelect(){
+        const sel = $('payment_student_select'); if(!sel) return; sel.innerHTML=''; const list = loadStudents();
+        list.forEach(s => { const opt = document.createElement('option'); opt.value=s.id; opt.textContent = `${s.id} — ${s.firstName} ${s.lastName||''} (${s.class||'-'})`; sel.appendChild(opt); });
+      }
+
+      $('addPaymentAdmin').addEventListener('click', ()=>{
+        const sid = $('payment_student_select').value; const amount = Number($('pay_amount').value || 0); const date = $('pay_date').value || nowISO(); const note = $('pay_note').value.trim() || 'Payment';
+        if(!sid || !amount) return alert('Select student and enter amount'); const list = loadStudents(); const s = list.find(x => x.id === sid); if(!s) return alert('Student not found');
+        s.payments = s.payments || []; s.payments.push({ amount, date, note }); saveStudents(list); generateReceiptPDF(s, { amount, date, note }); $('pay_amount').value=''; $('pay_note').value=''; alert('Payment added and receipt will download');
+      });
+
+      window.adminView = function(id){
+        const list = loadStudents(); const s = list.find(x=>x.id===id); if(!s) return alert('Not found');
+        let html = `<html><head><title>Student ${s.id}</title></head><body style="font-family:sans-serif;color:#111">`;
+        html += `<h2>${s.firstName} ${s.lastName || ''} (${s.id})</h2>`;
+        html += `<p>Class: ${s.class || '-'} | Phone: ${s.phone || '-'} | Aadhaar: ${s.aadhaar || '-'}</p>`;
+        html += `<h3>Payments</h3>`;
+        if(!s.payments || !s.payments.length) html += '<div>No payments</div>'; else {
+          html += '<table border="1" cellpadding="6" cellspacing="0"><tr><th>Date</th><th>Amount</th><th>Note</th><th>Receipt</th></tr>';
+          s.payments.forEach((p, idx) => { html += `<tr><td>${p.date}</td><td>₹${p.amount}</td><td>${p.note||''}</td><td><button onclick="window.opener.generateReceiptFromChild('${s.id}',${idx});">Download</button></td></tr>`; });
+          html += '</table>';
+        }
+        html += `<p><button onclick="window.close()">Close</button></p></body></html>`;
+        const w = window.open('', '_blank', 'width=800,height=600'); w.document.write(html); w.document.close();
+      };
+
+      window.generateReceiptFromChild = function(studentId, payIndex){
+        const list = loadStudents(); const s = list.find(x => x.id === studentId); if(!s) return alert('Student not found'); const p = s.payments[payIndex]; if(!p) return alert('Payment not found'); generateReceiptPDF(s, p);
+      };
+
+      window.adminOpenEdit = function(id){ startEdit(id); setActiveNav(btnRegister); };
+
+      // Student login payment functions
+      $('doStudentLogin').addEventListener('click', ()=>{
+        const id = $('s_id').value.trim(); const phone = $('s_phone').value.trim(); const list = loadStudents(); const s = list.find(x => x.id === id && x.phone === phone);
+        if(!s) return alert('Invalid credentials (ID + phone)');
+        $('studentArea').classList.remove('hidden'); $('studentProfile').innerHTML = `<strong>${s.firstName} ${s.lastName||''}</strong> <div class="muted">ID: ${s.id} • Class: ${s.class||'-'}</div>`; renderStudentPayments(s); sessionStorage.setItem('loggedStudent', s.id);
+      });
+      $('studentCancel').addEventListener('click', ()=> { $('s_id').value=''; $('s_phone').value=''; $('studentArea').classList.add('hidden'); sessionStorage.removeItem('loggedStudent'); });
+
+      function renderStudentPayments(s){
+        const el = $('studentPayments'); const list = s.payments || []; if(!list.length) { el.innerHTML = '<div class="muted">No payments yet</div>'; return; }
+        let html = '<table><thead><tr><th>Date</th><th>Amount</th><th>Note</th><th>Receipt</th></tr></thead><tbody>';
+        list.slice().reverse().forEach((p, idx) => { html += `<tr><td>${p.date}</td><td>₹${p.amount}</td><td>${p.note||''}</td><td><button class="btn btn-ghost" onclick="generateReceiptByStudent('${s.id}', ${s.payments.length - 1 - idx})">Download</button></td></tr>`; });
+        html += '</tbody></table>'; el.innerHTML = html;
+      }
+
+      $('stu_add_payment').addEventListener('click', ()=>{
+        const sid = sessionStorage.getItem('loggedStudent'); if(!sid) return alert('Please login first'); const amount = Number($('stu_pay_amount').value || 0); const date = $('stu_pay_date').value || nowISO(); if(!amount) return alert('Enter amount');
+        const list = loadStudents(); const s = list.find(x => x.id === sid); if(!s) return alert('Student not found');
+        s.payments = s.payments || []; s.payments.push({ amount, date, note: 'Student added payment' }); saveStudents(list); renderStudentPayments(s); $('stu_pay_amount').value=''; $('stu_pay_date').value=''; generateReceiptPDF(s, { amount, date, note: 'Student added payment' }); alert('Payment added and receipt downloaded');
+      });
+
+      window.generateReceiptByStudent = function(studentId, payIdx){
+        const list = loadStudents(); const s = list.find(x => x.id === studentId); if(!s) return alert('Not found'); const p = s.payments[payIdx]; if(!p) return alert('Payment not found'); generateReceiptPDF(s, p);
+      };
+
+      // Attendance: create / mark
+      $('createAttendance').addEventListener('click', ()=>{
+        const className = $('att_class').value.trim(); const date = $('att_date').value || nowISO(); if(!className) return alert('Enter class name');
+        const students = loadStudents().filter(s => (s.class || '').toLowerCase() === className.toLowerCase());
+        if(!students.length) return alert('No students in this class');
+        const area = $('attendanceArea');
+        let html = `<div style="margin-bottom:8px"><strong>Mark Attendance for ${className} — ${date}</strong></div>`;
+        html += '<form id="attForm"><table><thead><tr><th>#</th><th>Name</th><th>Present</th></tr></thead><tbody>';
+        students.forEach((s, idx) => { html += `<tr><td>${idx+1}</td><td>${escapeHtml(s.firstName)} ${escapeHtml(s.lastName||'')} (${s.id})</td><td><input type="checkbox" name="p" value="${s.id}" checked></td></tr>`; });
+        html += '</tbody></table><div style="margin-top:8px"><button type="button" id="saveAttend" class="btn">Save Attendance</button></div></form>';
+        area.innerHTML = html;
+        document.getElementById('saveAttend').addEventListener('click', ()=>{
+          const form = document.getElementById('attForm');
+          const checked = Array.from(form.querySelectorAll('input[name="p"]:checked')).map(i => i.value);
+          const records = loadAttendance();
+          records.push({ className, date, presentIds: checked });
+          saveAttendance(records);
+          alert('Attendance saved');
+          area.innerHTML = '';
+        });
+      });
+      $('viewAttendance').addEventListener('click', ()=> renderAttendanceList());
+      function renderAttendanceList(){ const records = loadAttendance(); const area = $('attendanceArea'); if(!records.length){ area.innerHTML = '<div class="muted">No attendance records</div>'; return; }
+        let html = '<div style="max-height:240px;overflow:auto"><table><thead><tr><th>Class</th><th>Date</th><th>Present Count</th></tr></thead><tbody>';
+        records.slice().reverse().forEach(r => { html += `<tr><td>${escapeHtml(r.className)}</td><td>${r.date}</td><td>${r.presentIds.length}</td></tr>`; });
+        html += '</tbody></table></div>'; area.innerHTML = html;
+      }
+
+      // receipt generator using html2pdf
+      function generateReceiptPDF(student, payment){
+        const receiptHTML = `
+          <div style="font-family:Arial,sans-serif;padding:18px;color:#000;background:#fff;max-width:700px;margin:auto;border:1px solid #ddd">
+            <div style="text-align:center;border-bottom:2px double #000;padding-bottom:8px">
+              <h2 style="margin:0">SCIENCE TUTORIAL</h2>
+              <div style="font-size:13px;margin-top:4px">Mahesh Nagar Road no 2, Boring Road, Patna</div>
+              <div style="font-size:13px">Phone: 7562821016</div>
+            </div>
+            <div style="margin-top:12px;font-size:14px">
+              <p><strong>Receipt No:</strong> REC-${new Date().getFullYear()}-${String(Math.floor(Math.random()*10000)).padStart(4,'0')}</p>
+              <p><strong>Student:</strong> ${escapeHtml(student.firstName)} ${escapeHtml(student.lastName||'')} (${student.id})</p>
+              <p><strong>Class:</strong> ${escapeHtml(student.class||'-')}</p>
+              <p><strong>Payment Date:</strong> ${payment.date}</p>
+              <p><strong>Amount Paid:</strong> ₹${payment.amount}</p>
+              <p><strong>Note:</strong> ${escapeHtml(payment.note || '')}</p>
+            </div>
+            <div style="margin-top:18px;text-align:center;font-weight:700">Received with thanks</div>
+            <div style="margin-top:12px;border-top:1px solid #ddd;padding-top:8px;font-size:12px;color:#333">
+              SCIENCE TUTORIAL — Mahesh Nagar Road no 2, Boring Road, Patna
+            </div>
+          </div>
+        `;
+        const container = document.createElement('div'); container.innerHTML = receiptHTML; document.body.appendChild(container);
+        const opt = { margin: 0.4, filename: `Receipt_${student.id}_${payment.date}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, backgroundColor: '#ffffff' }, jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' } };
+        html2pdf().set(opt).from(container).save().then(()=> { document.body.removeChild(container); });
+      }
+
+      // expose some functions to child windows and global scope
+      window.generateReceiptPDF = generateReceiptPDF;
+      window.generateReceiptFromChild = generateReceiptFromChild;
+      window.renderList = renderList;
+      window.renderAdminTable = renderAdminTable;
+      window.populatePaymentSelect = populatePaymentSelect;
+      window.renderAttendanceList = renderAttendanceList;
+      window.startEdit = startEdit;
+      window.deleteStudent = deleteStudent;
+      window.openStudentAdmin = function(id){
+        const s = loadStudents().find(x=>x.id===id); if(!s) return alert('Not found');
+        alert(`${s.firstName} ${s.lastName||''} — ${s.class || '-'}\nPhone: ${s.phone}\nID: ${s.id}`);
+      };
+
+      // initial boot
+      if(!localStorage.getItem(STORAGE_STUDENTS)) localStorage.setItem(STORAGE_STUDENTS, JSON.stringify([]));
+      if(!localStorage.getItem(STORAGE_ATTEND)) localStorage.setItem(STORAGE_ATTEND, JSON.stringify([]));
+      // set home active and indicator
+      show('home'); setActiveNav(btnHome);
+      renderList(); updateCount(); initAdminUI();
+
+      // helper to initialize admin UI state
+      function initAdminUI(){ renderAdminTable(); populatePaymentSelect(); renderAttendanceList(); }
+    }); // DOMContentLoaded
+  </script>
+</body>
+</html>
